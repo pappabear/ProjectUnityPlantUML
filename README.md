@@ -1,3 +1,3 @@
 # Project Unity PlantUML
 
-![Image description](capture.png)
+![Our Image](https://github.com/pappabear/ProjectUnityPlantUML/blob/master/Capture.PNG)
