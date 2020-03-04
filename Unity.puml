@@ -1,0 +1,118 @@
+@startuml(id=Unity)
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Container.puml
+scale max 2000x1413
+title Project Unity
+
+skinparam {
+  shadowing false
+  arrowColor #707070
+  actorBorderColor #707070
+  componentBorderColor #707070
+  rectangleBorderColor #707070
+  noteBackgroundColor #ffffff
+  noteBorderColor #707070
+}
+
+'--- define the actors
+'actor "Customer" <<Person>> as 2 #ffbf00
+'note right of 2
+'  A customer
+'end note
+
+'--- define the Gateway system boundary
+package "New Unity UI Apps"  {
+  rectangle NewTgMobileUI <<ReactNative>> #facc2e [
+    New Mobile UI
+    --
+    Based on Office Fabric
+    React/Redux components.
+  ]
+
+  rectangle NewTgUI <<React>> #facc2e [
+    New Web UI
+    --
+    Based on Office Fabric
+    React/Redux components.
+  ]
+}
+
+'--- define the Gateway system boundary
+package "API Gateway"  {
+  rectangle SaasFabric <<API>> #facc2e [
+    Saas Fabric
+    --
+    Provide one source of truth
+    for client logins, databases, 
+    connection strings.
+  ]
+
+  rectangle WebGatewayAPI <<API>> #facc2e [
+    Web API Gateway
+    --
+    Scaleable.  Replaces FMCloud. Hosted in Azure.
+    Handles distributed cacheing.
+    Handles central logging.
+  ]
+
+}
+
+'--- define the Timegate system boundary
+package "Timegate"  {
+  
+  rectangle TgAPI <<API>> #facc2e [
+    Personel Scheduling
+    --
+    Faux microservice connecting
+    to legacy monolithic backend.
+  ]
+
+  rectangle TgAPI2 <<API>> #facc2e [
+    Something Else
+    --
+    Faux microservice connecting
+    to legacy monolithic backend.
+  ]
+
+  database TgDB <<DB>> #f5da81 [
+    Timegate Database
+    --
+    Legacy monolithic database.
+  ]
+}
+
+'--- define the WinTeam system boundary
+package "WinTeam"  {
+  rectangle WTAPI <<API>> #facc2e [
+    Payroll
+    --
+    Faux microservice connecting
+    to legacy monolithic backend.
+  ]
+
+  database WTDB <<DB>> #f5da81 [
+    WinTeam Database
+    --
+    Legacy monolithic database.
+  ]
+}
+
+  rectangle Mapper <<Mapper>> #facc2e [
+    Mapper
+    --
+    Mapper.
+  ]
+
+'--- define connections
+Rel(WTDB, Mapper, "Maps")
+Rel(Mapper, TgDB, "Maps")
+Rel(NewTgUI, WebGatewayAPI, "Calls")
+Rel(NewTgMobileUI, WebGatewayAPI, "Calls")
+Rel_R(WTAPI, NewTgUI, "Embed WinTeam legacy financials via RAS")
+Rel_R(WebGatewayAPI, SaasFabric, "Authenticates and authorizes against")
+Rel(WebGatewayAPI, TgAPI, "Calls")
+Rel(WebGatewayAPI, TgAPI2, "Calls")
+Rel(TgAPI, TgDB, "Calls")
+Rel(TgAPI2, TgDB, "Calls")
+Rel(WTAPI, WTDB, "Calls")
+
+@enduml
